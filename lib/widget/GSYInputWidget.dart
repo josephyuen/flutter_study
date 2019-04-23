@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_study/common/style/GSYStyle.dart';
 
 /// 带图标的输入框
 class GSYInputWidget extends StatefulWidget {
@@ -12,9 +13,11 @@ class GSYInputWidget extends StatefulWidget {
 
   final TextStyle textStyle;
 
+  final int maxlength;
+
   final TextEditingController controller;
 
-  GSYInputWidget({Key key, this.hintText, this.iconData, this.onChanged, this.textStyle, this.controller, this.obscureText = false}) : super(key: key);
+  GSYInputWidget({Key key, this.hintText, this.iconData, this.onChanged,this.maxlength:12, this.textStyle, this.controller, this.obscureText = false}) : super(key: key);
 
   @override
   _GSYInputWidgetState createState() => new _GSYInputWidgetState();
@@ -28,11 +31,14 @@ class _GSYInputWidgetState extends State<GSYInputWidget> {
   @override
   Widget build(BuildContext context) {
     return new TextField(
+      cursorColor: Colors.black,
       controller: widget.controller,
       onChanged: widget.onChanged,
+      cursorRadius: new Radius.circular(2.0),
       obscureText: widget.obscureText,
+      maxLength: widget.maxlength,
       decoration: new InputDecoration(
-        hintText: widget.hintText,
+        labelText: widget.hintText,
         icon: widget.iconData == null ? null : new Icon(widget.iconData),
       ),
     );

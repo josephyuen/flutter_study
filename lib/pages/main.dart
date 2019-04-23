@@ -81,9 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _displaySnackBar(context, "商洛柳田降临！！！");
     new Future.delayed(Duration(seconds: 1), () => {
 //      Navigator.pushNamed(context,LoginPage.sName)
-      Navigator.push(
-      context,
-      new MaterialPageRoute(builder: (context) => new LoginPage()),
+      Navigator.push(context,new MaterialPageRoute(builder: (context) => new LoginPage()),
     )
 
     });

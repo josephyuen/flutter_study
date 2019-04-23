@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_study/common/style/GSYStyle.dart';
 import 'package:flutter_statusbar/flutter_statusbar.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 /**
  * 通用逻辑
@@ -118,9 +120,9 @@ class CommonUtils {
                     child: new Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        //new Container(child: SpinKitCubeGrid(color: Color(GSYColors.white))),
+                        new Container(child: SpinKitWave(color: Color(GSYColors.white))),
                         new Container(height: 10.0),
-                       // new Container(child: new Text(CommonUtils.getLocale(context).loading_text, style: GSYConstant.normalTextWhite)),
+                        new Container(child: new Text("加载中...", style: GSYConstant.normalTextWhite)),
                       ],
                     ),
                   ),
@@ -130,6 +132,15 @@ class CommonUtils {
   }
 
 
+  static void showToast({String infoMsg,int showTime= 1}){
+    Fluttertoast.showToast(
+        msg: infoMsg,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIos: showTime,
+        backgroundColor: Colors.black54,
+        textColor: Colors.white);
+  }
 
 
 }

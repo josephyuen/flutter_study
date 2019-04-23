@@ -78,3 +78,13 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.io/custom-fonts/#from-packages
+
+  assets:
+    - static/images/ic_app_logo.webp
+    - static/images/no_img_bg.webp
+
+
+  fonts:
+    - family: wxcIconFont
+      fonts:
+        - asset: static/font/iconfont.ttf

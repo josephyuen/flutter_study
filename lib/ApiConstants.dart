@@ -8,9 +8,9 @@ class ApiConstants{
 
   static final SERVER_HOST = "https://www.wanandroid.com";
 
-  static final LOGIN = SERVER_HOST + "/user/login";  // 登录
+  static final LOGIN = SERVER_HOST + "/user/login";  // 登录   username，password
 
-  static final REGISTER = SERVER_HOST + "/user/register";  // 注册
+  static final REGISTER = SERVER_HOST + "/user/register";  // 注册   username,password,repassword
 
   static final LOGOUT = SERVER_HOST + "/user/logout/json";  // 登出
 
