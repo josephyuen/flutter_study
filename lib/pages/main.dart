@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_study/ApiConstants.dart';
 import 'package:flutter_study/common/GSYState.dart';
@@ -66,6 +68,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   var _wordPair = new WordPair.random();
 
+  var _androidAppRetain = MethodChannel("android_app_retain");
+
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   void _displaySnackBar(BuildContext context, String text) {
@@ -120,42 +124,59 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            new Padding(
-              padding: EdgeInsets.only(top: 50),
-              child: Text(
-                '随机字符串，嘿嘿😝:',
-              ),
-            ),
-            Text(
-              _wordPair.asPascalCase,
-              style: Theme.of(context).textTheme.display1,
-            ),
-            new Expanded(
-              child: new Padding(
-                padding: EdgeInsets.only(right: 30, bottom: 30),
-                child: new Align(
-                  alignment: Alignment.bottomRight,
-                  child: new FancyFab(
-                    onFirstPressed: _incrementCounter, // 随机切换
-                    onSecondPressed: _goToLoginPage,
-                    onThirdPressed: _goToImagePicker, //  跳转新页面
-                  ),
+    return new WillPopScope(
+      onWillPop: (){
+        if (Platform.isAndroid) {
+          if (Navigator.of(context).canPop()) {
+            return Future.value(true);
+          } else {
+            _androidAppRetain.invokeMethod("sendToBackground");
+            return Future.value(false);
+          }
+        } else {
+          return Future.value(true);
+        }
+      },
+
+      child: Scaffold(
+        key: _scaffoldKey,
+        appBar: AppBar(
+          title: Text(widget.title),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              new Padding(
+                padding: EdgeInsets.only(top: 50),
+                child: Text(
+                  '随机字符串，嘿嘿😝:',
                 ),
               ),
-              flex: 1,
-            ),
-          ],
+              Text(
+                _wordPair.asPascalCase,
+                style: Theme.of(context).textTheme.display1,
+              ),
+              new Expanded(
+                child: new Padding(
+                  padding: EdgeInsets.only(right: 30, bottom: 30),
+                  child: new Align(
+                    alignment: Alignment.bottomRight,
+                    child: new FancyFab(
+                      onFirstPressed: _incrementCounter, // 随机切换
+                      onSecondPressed: _goToLoginPage,
+                      onThirdPressed: _goToImagePicker, //  跳转新页面
+                    ),
+                  ),
+                ),
+                flex: 1,
+              ),
+            ],
+          ),
         ),
       ),
+
     );
+
   }
 }
