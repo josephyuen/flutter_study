@@ -3,19 +3,26 @@ import 'dart:async';
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_study/ApiConstants.dart';
 import 'package:flutter_study/common/GSYState.dart';
 import 'package:flutter_study/common/model/User.dart';
 import 'package:flutter_study/pages/ImagePickerPage.dart';
 import 'package:flutter_study/pages/LoginPage.dart';
+import 'package:flutter_study/pages/RegisterPage.dart';
+import 'package:flutter_study/pages/todo/HomeTodoPage.dart';
 import 'package:flutter_study/widget/FancyFab.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:redux/redux.dart';
+import 'package:flutter_stetho/flutter_stetho.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  Stetho.initialize();
+  return runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
-
   final store = new Store<GSYState>(
     appReducer,
 
@@ -37,8 +44,10 @@ class MyApp extends StatelessWidget {
             ),
             home: MyHomePage(title: '商洛柳田的秘密花园'),
             routes: {
-              ImagePickerPage.sName: (context) => new ImagePickerPage(),
-              LoginPage.sName: (context) => new LoginPage(),
+              ImagePickerPage.sName: (context) => ImagePickerPage(),
+              LoginPage.sName: (context) => LoginPage(),
+              RegisterPage.sName: (context) => RegisterPage(),
+              HomeTodoPage.sName: (context) => HomeTodoPage(),
             });
       }),
     );
@@ -57,13 +66,12 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   var _wordPair = new WordPair.random();
 
-
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   void _displaySnackBar(BuildContext context, String text) {
     final snackBar = SnackBar(
-        content: Text(text),
-        duration: Duration(seconds: 1),
+      content: Text(text),
+      duration: Duration(seconds: 1),
     );
     _scaffoldKey.currentState.showSnackBar(snackBar);
   }
@@ -77,14 +85,19 @@ class _MyHomePageState extends State<MyHomePage> {
   /**
    *  去登录页面
    */
-  void _goToLoginPage() {
+  Future _goToLoginPage() async {
     _displaySnackBar(context, "商洛柳田降临！！！");
-    new Future.delayed(Duration(seconds: 1), () => {
-//      Navigator.pushNamed(context,LoginPage.sName)
-      Navigator.push(context,new MaterialPageRoute(builder: (context) => new LoginPage()),
-    )
+    //  这里判断是否存有登录状态
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String cookie = prefs.getString(ApiConstants.LOGIN_COOKIE);
 
-    });
+    if (cookie == null || cookie.isEmpty) {
+      new Future.delayed(Duration(seconds: 1),
+          () => {Navigator.pushNamed(context, LoginPage.sName)});
+    } else {
+      new Future.delayed(Duration(seconds: 1),
+          () => {Navigator.pushNamed(context, HomeTodoPage.sName)});
+    }
   }
 
   /**
@@ -103,8 +116,6 @@ class _MyHomePageState extends State<MyHomePage> {
       context,
       new MaterialPageRoute(builder: (context) => new ImagePickerPage()),
     );
-//    Navigator.pushNamed(context, ImagePickerPage.sName);
-
   }
 
   @override
@@ -125,13 +136,8 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             Text(
-//              '$_counter',
-
               _wordPair.asPascalCase,
-              style: Theme
-                  .of(context)
-                  .textTheme
-                  .display1,
+              style: Theme.of(context).textTheme.display1,
             ),
             new Expanded(
               child: new Padding(

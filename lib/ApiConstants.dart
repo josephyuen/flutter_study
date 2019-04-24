@@ -6,6 +6,9 @@
  */
 class ApiConstants{
 
+  static final LOGIN_COOKIE = "login_cookie";
+
+
   static final SERVER_HOST = "https://www.wanandroid.com";
 
   static final LOGIN = SERVER_HOST + "/user/login";  // 登录   username，password

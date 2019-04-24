@@ -10,7 +10,7 @@ description: A new Flutter application.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.0.0-dev.68.0 <3.0.0"
+  sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -30,6 +30,7 @@ dependencies:
   image_picker: ^0.5.0+3
   connectivity: ^0.4.3
   dio: 2.1.2
+  flutter_stetho: ^0.2.2
 
 
 dev_dependencies:
@@ -80,8 +81,9 @@ flutter:
   # see https://flutter.io/custom-fonts/#from-packages
 
   assets:
-    - static/images/ic_app_logo.webp
+    - static/images/quickwis_travel.webp
     - static/images/no_img_bg.webp
+    - static/images/quickwis_badminton.webp
 
 
   fonts:

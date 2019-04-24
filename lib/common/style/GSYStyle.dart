@@ -210,7 +210,8 @@ class GSYConstant {
 class GSYICons {
   static const String FONT_FAMILY = 'wxcIconFont';
 
-  static const String QUICKWIS_MEMBERS = 'static/images/ic_app_logo.webp';
+  static const String QUICKWIS_MEMBERS = 'static/images/quickwis_travel.webp';
+  static const String QUICKWIS_ACTIVITY = 'static/images/quickwis_badminton.webp';
   static const String DEFAULT_IMAGE = 'static/images/no_img_bg.webp';
   static const String DEFAULT_REMOTE_PIC = 'https://raw.githubusercontent.com/CarGuo/GSYGithubAppFlutter/master/static/images/logo.png';
 
