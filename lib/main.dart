@@ -1,20 +1,18 @@
 import 'dart:async';
 import 'dart:io';
-
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_study/ApiConstants.dart';
-import 'package:flutter_study/common/GSYState.dart';
-import 'package:flutter_study/common/model/User.dart';
+import 'package:flutter_study/Constants.dart';
 import 'package:flutter_study/pages/ImagePickerPage.dart';
 import 'package:flutter_study/pages/LoginPage.dart';
 import 'package:flutter_study/pages/RegisterPage.dart';
+import 'package:flutter_study/pages/todo/AddToDoPage.dart';
 import 'package:flutter_study/pages/todo/HomeTodoPage.dart';
 import 'package:flutter_study/widget/FancyFab.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:redux/redux.dart';
 import 'package:flutter_stetho/flutter_stetho.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -25,34 +23,35 @@ void main() {
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
-  final store = new Store<GSYState>(
-    appReducer,
-
-    ///初始化数据
-    initialState: new GSYState(userInfo: User.empty()),
-  );
-
   MyApp({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return new StoreProvider(
-      store: store,
-      child: new StoreBuilder<GSYState>(builder: (context, store) {
-        return MaterialApp(
-            title: '商洛柳田',
-            theme: ThemeData(
-              primarySwatch: Colors.green,
-            ),
-            home: MyHomePage(title: '商洛柳田的秘密花园'),
-            routes: {
-              ImagePickerPage.sName: (context) => ImagePickerPage(),
-              LoginPage.sName: (context) => LoginPage(),
-              RegisterPage.sName: (context) => RegisterPage(),
-              HomeTodoPage.sName: (context) => HomeTodoPage(),
-            });
-      }),
-    );
+    return MaterialApp(
+        title: '商洛柳田',
+        theme: ThemeData(
+          primarySwatch: Colors.green,
+        ),
+        home: MyHomePage(title: '商洛柳田的秘密花园'),
+
+        localizationsDelegates: [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+        ],
+
+        supportedLocales: [
+          const Locale('zh','CH'),
+          const Locale('en','US')
+        ],
+
+        routes: {
+          ImagePickerPage.sName: (context) => ImagePickerPage(),
+          LoginPage.sName: (context) => LoginPage(),
+          RegisterPage.sName: (context) => RegisterPage(),
+          HomeTodoPage.sName: (context) => HomeTodoPage(),
+          AddToDoPage.sName: (context) => AddToDoPage()
+
+        });
   }
 }
 
@@ -68,7 +67,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   var _wordPair = new WordPair.random();
 
-  var _androidAppRetain = MethodChannel("android_app_retain");
+  var _androidAppRetain = MethodChannel(Constants.NATIVE_MESSENGER_1);
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -125,7 +124,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return new WillPopScope(
-      onWillPop: (){
+      onWillPop: () {
         if (Platform.isAndroid) {
           if (Navigator.of(context).canPop()) {
             return Future.value(true);
@@ -137,7 +136,6 @@ class _MyHomePageState extends State<MyHomePage> {
           return Future.value(true);
         }
       },
-
       child: Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
@@ -175,8 +173,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
       ),
-
     );
-
   }
 }

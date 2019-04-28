@@ -4,6 +4,8 @@
 
 class Constants{
 
+  static final NATIVE_MESSENGER_1 = "android_app_retain";
+
 
 
 

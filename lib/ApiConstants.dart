@@ -18,7 +18,7 @@ class ApiConstants{
   static final LOGOUT = SERVER_HOST + "/user/logout/json";  // 登出
 
 
-  static final ADD_TODO = SERVER_HOST + "/lg/todo/add/json";  // 新增一个TODO
+  static final ADD_TODO = SERVER_HOST + "/lg/todo/add/json";  // 新增一个TODO   title: 新增标题（必须） content: 新增详情（必须） date: 2018-08-01 预定完成时间（不传默认当天，建议传） type: 大于0的整数（可选） priority 大于0的整数（可选）；
 
   static final UPDATE_TODO = SERVER_HOST + "/lg/todo/update/83/json";  // 新增一个TODO
 
@@ -26,7 +26,7 @@ class ApiConstants{
 
   static final UPDATE_TODO_LIST = SERVER_HOST + "/lg/todo/done/80/json";  // 仅更新完成状态Todo
 
-  static final GET_TODO_LIST = SERVER_HOST + "/lg/todo/v2/list/页码/json";  // TODOLIST 列表
+  static final GET_TODO_LIST = SERVER_HOST + "/lg/todo/v2/list/";  // TODOLIST 列表   /json
 
 
 

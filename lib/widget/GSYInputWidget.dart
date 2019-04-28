@@ -31,7 +31,7 @@ class _GSYInputWidgetState extends State<GSYInputWidget> {
   @override
   Widget build(BuildContext context) {
     return new TextField(
-      cursorColor: Colors.black,
+      cursorColor: Theme.of(context).primaryColor,
       controller: widget.controller,
       onChanged: widget.onChanged,
       cursorRadius: new Radius.circular(2.0),
