@@ -90,6 +90,10 @@ flutter:
     - static/images/quickwis_travel.webp
     - static/images/no_img_bg.webp
     - static/images/quickwis_badminton.webp
+    - static/images/ic_delete.png
+    - static/images/ic_done_rec.png
+    - static/images/ic_todo_rec.png
+    - static/images/ic_arrow_triangle_down.png
 
 
   fonts:

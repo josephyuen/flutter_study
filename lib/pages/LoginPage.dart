@@ -75,7 +75,6 @@ class _LoginState extends State<LoginPage> {
                       alignment: Alignment.centerRight,
                       child: GestureDetector(
                           onTap:(){
-//                            CommonUtils.showToast(infoMsg: "前往用户注册页面");
                               Navigator.pushNamed(context, RegisterPage.sName);
                           },
                           child:new Text(
@@ -104,7 +103,6 @@ class _LoginState extends State<LoginPage> {
    * 遍历所有cookies并保存登录状态
    */
   Future _getAllCookies(String key,List<String> values) async {
-    print(key + "--------" +  values.toString());
     if(HttpHeaders.setCookieHeader == key){
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString(ApiConstants.LOGIN_COOKIE,values.toString());

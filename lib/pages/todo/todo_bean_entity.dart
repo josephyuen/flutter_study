@@ -89,7 +89,7 @@ class TodoBeanData {
 class TodoBeanDataData {
 	int date;
 	String dateStr;
-	int id;
+	int id = -1;
 	int priority;
 	String title;
 	int type;

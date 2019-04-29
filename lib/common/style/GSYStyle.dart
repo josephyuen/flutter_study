@@ -210,10 +210,17 @@ class GSYConstant {
 class GSYICons {
   static const String FONT_FAMILY = 'wxcIconFont';
 
+
+
   static const String QUICKWIS_MEMBERS = 'static/images/quickwis_travel.webp';
+  static const String IC_DONE_REC = 'static/images/ic_done_rec.png';
+  static const String IC_TODO_REC = 'static/images/ic_todo_rec.png';
+  static const String IC_DELETE = 'static/images/ic_delete.png';
+  static const String IC_TRIANGLE_DOWN = 'static/images/ic_arrow_triangle_down.png';
   static const String QUICKWIS_ACTIVITY = 'static/images/quickwis_badminton.webp';
   static const String DEFAULT_IMAGE = 'static/images/no_img_bg.webp';
   static const String DEFAULT_REMOTE_PIC = 'https://raw.githubusercontent.com/CarGuo/GSYGithubAppFlutter/master/static/images/logo.png';
+
 
   static const IconData HOME = const IconData(0xe624, fontFamily: GSYICons.FONT_FAMILY);
   static const IconData MORE = const IconData(0xe674, fontFamily: GSYICons.FONT_FAMILY);
