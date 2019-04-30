@@ -22,7 +22,7 @@ class ApiConstants{
 
   static final UPDATE_TODO = SERVER_HOST + "/lg/todo/update/83/json";  // 新增一个TODO
 
-  static final DELETE_TODO = SERVER_HOST + "/lg/todo/delete/83/json";  // 删除一个TODO
+  static final DELETE_TODO = SERVER_HOST + "/lg/todo/delete/%s/json";  // 删除一个TODO
 
   static final UPDATE_TODO_LIST = SERVER_HOST + "/lg/todo/done/80/json";  // 仅更新完成状态Todo
 

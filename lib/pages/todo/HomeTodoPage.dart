@@ -2,10 +2,14 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_study/ApiConstants.dart';
+import 'package:flutter_study/Constants.dart';
 import 'package:flutter_study/common/style/GSYStyle.dart';
+import 'package:flutter_study/main.dart';
 import 'package:flutter_study/pages/todo/AddToDoPage.dart';
 import 'package:flutter_study/pages/todo/todo_bean_entity.dart';
 import 'package:flutter_study/utils/CommonUtils.dart';
+import 'package:sprintf/sprintf.dart';
+import 'package:flutter_study/widget/ClickEffectImage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /**
@@ -22,7 +26,7 @@ class HomeTodoPage extends StatefulWidget {
   State<StatefulWidget> createState() => HomeTodoState();
 }
 
-class HomeTodoState extends State<HomeTodoPage> {
+class HomeTodoState extends State<HomeTodoPage> with RouteAware {
   TodoBeanEntity _todoBean;
 
   @override
@@ -33,10 +37,40 @@ class HomeTodoState extends State<HomeTodoPage> {
     });
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context));
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  Future didPopNext() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool(Constants.ADD_TODO_EVENT)) {
+      prefs.setBool(Constants.ADD_TODO_EVENT, false);
+      _getAllTodos(1);
+    }
+  }
+
+  // Called when the current route has been pushed.
+  void didPush() {
+  }
+
+  // Called when the current route has been popped off.
+  void didPop() {
+  }
+
+  // Called when a new route has been pushed, and the current route is no longer visible.
+  void didPushNext() {
+  }
 
   @override
   void didUpdateWidget(HomeTodoPage oldWidget) {
-    // TODO: implement didUpdateWidget
     super.didUpdateWidget(oldWidget);
   }
 
@@ -88,16 +122,16 @@ class HomeTodoState extends State<HomeTodoPage> {
                 ),
                 flex: 1,
               ),
-
               Padding(
-                padding: EdgeInsets.only(right: 6.0),
-                child: Image(image: new AssetImage(GSYICons.IC_TRIANGLE_DOWN),
-                  fit: BoxFit.fitWidth,
-                  width: 12.0,
-                  height: 10.0,
-                  alignment: Alignment.center,
-                ),
-              ),
+                  padding: EdgeInsets.only(right: 6.0),
+                  child: ClickEffectImage(
+                    assetsImgPath: GSYICons.IC_TRIANGLE_DOWN,
+                    width: 16.0,
+                    height: 12.0,
+                    onClick: () {
+                      CommonUtils.showToast(infoMsg: "点击了三角形");
+                    },
+                  )),
             ],
           ),
         ),
@@ -110,12 +144,11 @@ class HomeTodoState extends State<HomeTodoPage> {
           children: <Widget>[
             Row(
               children: <Widget>[
-                Image(
-                  image: new AssetImage(GSYICons.IC_TODO_REC),
-                  fit: BoxFit.fitWidth,
+                ClickEffectImage(
                   width: 20.0,
                   height: 20.0,
-                  alignment: Alignment.center,
+                  assetsImgPath: GSYICons.IC_TODO_REC,
+                  onClick: (){CommonUtils.showToast(infoMsg: "点击了完成按钮，😃😃😃");},
                 ),
                 Expanded(
                   child: Padding(
@@ -124,20 +157,18 @@ class HomeTodoState extends State<HomeTodoPage> {
                   ),
                   flex: 1,
                 ),
-                Image(
-                  image: new AssetImage(GSYICons.IC_DELETE),
+                ClickEffectImage(
                   width: 20.0,
                   height: 20.0,
-                  alignment: Alignment.center,
+                  assetsImgPath: GSYICons.IC_DELETE,
+                  onClick: () {
+                    _deleteCurTodo(index);
+                  },
                 ),
-                SizedBox(
-                  width: 20.0,
-                )
+                SizedBox(width: 20.0,)
               ],
             ),
-            SizedBox(
-              height: 10.0,
-            ),
+            SizedBox(height: 10.0,),
             Padding(
               padding: EdgeInsets.only(left: 28.0, right: 28.0),
               child: Align(
@@ -199,6 +230,7 @@ class HomeTodoState extends State<HomeTodoPage> {
 
   void _dealWithTodoLists() {
     if (_todoBean == null) return;
+    _itemDatas.clear();
     Map<String, String> map = new Map();
     _todoBean.data.datas.forEach((bean) {
       if (map.containsKey(bean.dateStr)) {
@@ -209,10 +241,48 @@ class HomeTodoState extends State<HomeTodoPage> {
         _itemDatas.add(bean);
       }
     });
-
-    // print("-------" + _itemDatas.toString());
-    setState(() {});
+    setState(() {});   // 刷新页面
   }
+
+
+  /**
+   * 删除此条代办事项
+   */
+  Future _deleteCurTodo(int index) async {
+    CommonUtils.showLoadingDialog(context);
+    Dio dio = new Dio();
+    dio.options.contentType =
+        ContentType.parse("application/x-www-form-urlencoded");
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String cookies = prefs.getString(ApiConstants.LOGIN_COOKIE);
+    Map<String, dynamic> headers = new Map();
+    headers['Cookie'] = cookies;
+    Options options = new Options(headers: headers);
+    Response response;
+    try {
+      String requestUrl = sprintf(ApiConstants.DELETE_TODO,[_itemDatas[index].id.toString()]);
+      response = await dio.post(requestUrl, data: {"id":_itemDatas[index].id}, options: options);
+    } on DioError catch (e) {
+      Navigator.of(context, rootNavigator: true).pop(null);
+      CommonUtils.showToast(infoMsg: "请求服务器失败");
+      return;
+    }
+    if (response.statusCode == 200) {
+      var result = response.data;
+      if (result["errorCode"] == 0) {
+        CommonUtils.showToast(infoMsg: "删除代办成功");
+        _itemDatas.removeAt(index);
+        setState(() {});
+      } else {
+        CommonUtils.showToast(infoMsg: result["errorMsg"]);
+      }
+    } else {
+      CommonUtils.showToast(infoMsg: "服务器响应异常");
+    }
+    Navigator.of(context, rootNavigator: true).pop(null);
+  }
+
+
 }
 
 TodoBeanDataData _getNewDateTitle(dateStr) {

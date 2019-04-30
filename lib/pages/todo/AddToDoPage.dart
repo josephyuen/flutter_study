@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_study/ApiConstants.dart';
+import 'package:flutter_study/Constants.dart';
 import 'package:flutter_study/utils/CommonUtils.dart';
 import 'package:date_format/date_format.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -160,6 +161,8 @@ class AddTodoState extends State<AddToDoPage> {
       var result = response.data;
       if (result["errorCode"] == 0) {
         CommonUtils.showToast(infoMsg: "已成功为您添加了一条代办事项");
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setBool(Constants.ADD_TODO_EVENT, true);
       } else {
         CommonUtils.showToast(infoMsg: result["errorMsg"]);
       }

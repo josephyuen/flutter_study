@@ -21,6 +21,9 @@ void main() {
   return runApp(MyApp());
 }
 
+// global RouteObserver
+final RouteObserver<PageRoute> routeObserver = new RouteObserver<PageRoute>();
+
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   MyApp({Key key}) : super(key: key);
@@ -33,7 +36,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.green,
         ),
         home: MyHomePage(title: '商洛柳田的秘密花园'),
-
+        navigatorObservers: <NavigatorObserver>[routeObserver],
         localizationsDelegates: [
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
