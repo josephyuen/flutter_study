@@ -9,6 +9,7 @@ import 'package:flutter_study/Constants.dart';
 import 'package:flutter_study/pages/ImagePickerPage.dart';
 import 'package:flutter_study/pages/LoginPage.dart';
 import 'package:flutter_study/pages/RegisterPage.dart';
+import 'package:flutter_study/pages/VoiceSetPage.dart';
 import 'package:flutter_study/pages/todo/AddToDoPage.dart';
 import 'package:flutter_study/pages/todo/HomeTodoPage.dart';
 import 'package:flutter_study/widget/FancyFab.dart';
@@ -86,6 +87,8 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _wordPair = new WordPair.random();
     });
+
+    Navigator.push(context, MaterialPageRoute(builder: (context) => VoiceSetPage(title: "文本转语音测试")));
   }
 
   /**
