@@ -33,8 +33,4 @@ class ClickEffectImage extends StatelessWidget{
       ),
     );
   }
-
-
-
-
 }
