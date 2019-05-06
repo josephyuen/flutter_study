@@ -26,6 +26,19 @@ class HomeTodoPage extends StatefulWidget {
   State<StatefulWidget> createState() => HomeTodoState();
 }
 
+
+deleteFromDatas(BuildContext context, TodoBeanDataData item,
+      List<Entry> entryDatas, Map<String, int> gtjMap) {
+    int entryIndex = gtjMap[item.dateStr];
+    List<TodoBeanDataData> todoLists = entryDatas[entryIndex].todoBeans;
+    bool a = todoLists.remove(item);
+    if (todoLists.isEmpty) {
+      entryDatas.removeAt(entryIndex);
+    }
+    CommonUtils.showToast(infoMsg: "结果是什么：$a");
+  }
+
+
 class HomeTodoState extends State<HomeTodoPage> with RouteAware {
   TodoBeanEntity _todoBean;
 
@@ -33,7 +46,7 @@ class HomeTodoState extends State<HomeTodoPage> with RouteAware {
   void initState() {
     super.initState();
     new Future.delayed(const Duration(seconds: 0), () {
-      _getAllTodos(1);
+      getAllTodos(1);
     });
   }
 
@@ -53,21 +66,18 @@ class HomeTodoState extends State<HomeTodoPage> with RouteAware {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     if (prefs.getBool(Constants.ADD_TODO_EVENT)) {
       prefs.setBool(Constants.ADD_TODO_EVENT, false);
-      _getAllTodos(1);
+      getAllTodos(1);
     }
   }
 
   // Called when the current route has been pushed.
-  void didPush() {
-  }
+  void didPush() {}
 
   // Called when the current route has been popped off.
-  void didPop() {
-  }
+  void didPop() {}
 
   // Called when a new route has been pushed, and the current route is no longer visible.
-  void didPushNext() {
-  }
+  void didPushNext() {}
 
   @override
   void didUpdateWidget(HomeTodoPage oldWidget) {
@@ -87,112 +97,136 @@ class HomeTodoState extends State<HomeTodoPage> with RouteAware {
         ),
       ]),
       body: new ListView.builder(
-        itemCount: _itemDatas.length,
+        itemCount: _entryDatas.length,
         itemBuilder: (context, index) {
-          return _buildItems(context, index);
+          return _buildItems(_entryDatas[index]);
         },
       ),
     );
   }
 
   // 构建条目
-  Widget _buildItems(BuildContext context, int index) {
-    final item = _itemDatas[index];
-    if (item.id == null) {
-      // 这是日期标题啊
-      return new Container(
-        margin: EdgeInsets.only(top: 10.0),
-        height: 30.0,
-        color: Theme.of(context).primaryColor,
-        child: Padding(
-          padding: EdgeInsets.only(left: 16.0, right: 16.0),
-          child: Row(
+  Widget _buildItems(Entry root) {
+    return ExpansionTile(
+      key: PageStorageKey<Entry>(root),
+      title: Text(root.dateStr),
+      children: root.todoBeans.map<Widget>(_buildContent).toList(),
+    );
+  }
+
+  Widget _buildContent(TodoBeanDataData item) {
+    return todoContent(item, _entryDatas, _gtjMap);
+  }
+
+
+
+   /*
+   * 删除此条代办事项
+   */
+  Future _deleteCurTodo(BuildContext context, TodoBeanDataData item,
+      List<Entry> entryDatas, Map<String, int> gtjMap) async {
+    CommonUtils.showLoadingDialog(context);
+    Dio dio = new Dio();
+    dio.options.contentType =
+        ContentType.parse("application/x-www-form-urlencoded");
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String cookies = prefs.getString(ApiConstants.LOGIN_COOKIE);
+    Map<String, dynamic> headers = new Map();
+    headers['Cookie'] = cookies;
+    Options options = new Options(headers: headers);
+    Response response;
+    try {
+      String requestUrl =
+          sprintf(ApiConstants.DELETE_TODO, [item.id.toString()]);
+      response =
+          await dio.post(requestUrl, data: {"id": item.id}, options: options);
+    } on DioError catch (e) {
+      Navigator.of(context, rootNavigator: true).pop(null);
+      CommonUtils.showToast(infoMsg: "请求服务器失败");
+      return;
+    }
+    if (response.statusCode == 200) {
+      var result = response.data;
+      if (result["errorCode"] == 0) {
+        CommonUtils.showToast(infoMsg: "删除代办成功");
+        deleteFromDatas(context, item, entryDatas, gtjMap);
+        setState(() {});
+      } else {
+        CommonUtils.showToast(infoMsg: result["errorMsg"]);
+      }
+    } else {
+      CommonUtils.showToast(infoMsg: "服务器响应异常");
+    }
+    Navigator.of(context, rootNavigator: true).pop(null);
+  }
+
+
+
+  Widget todoContent(final TodoBeanDataData item, final List<Entry> entryDatas,
+      final Map<String, int> gtjMap) {
+          return new Container(
+      margin: EdgeInsets.only(top: 15.0, left: 20.0, bottom: 10.0),
+      child: Column(
+        children: <Widget>[
+          Row(
             children: <Widget>[
+              ClickEffectImage(
+                width: 20.0,
+                height: 20.0,
+                assetsImgPath: GSYICons.IC_TODO_REC,
+                onClick: () {
+                  CommonUtils.showToast(infoMsg: "点击了完成按钮，😃😃😃");
+                },
+              ),
               Expanded(
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    item.dateStr,
-                    textAlign: TextAlign.start,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18.0,
-                    ),
-                  ),
+                child: Padding(
+                  padding: EdgeInsets.only(left: 8.0),
+                  child: Text(item.title, style: TextStyle(fontSize: 16.0)),
                 ),
                 flex: 1,
               ),
-              Padding(
-                  padding: EdgeInsets.only(right: 6.0),
-                  child: ClickEffectImage(
-                    assetsImgPath: GSYICons.IC_TRIANGLE_DOWN,
-                    width: 16.0,
-                    height: 12.0,
-                    onClick: () {
-                      CommonUtils.showToast(infoMsg: "点击了三角形");
-                    },
-                  )),
+              ClickEffectImage(
+                width: 20.0,
+                height: 20.0,
+                assetsImgPath: GSYICons.IC_DELETE,
+                onClick: () {
+                  _deleteCurTodo(context, item, entryDatas, gtjMap);
+                },
+              ),
+              SizedBox(
+                width: 20.0,
+              )
             ],
           ),
-        ),
-      );
-    } else {
-      //  这是代办内容啊
-      return new Container(
-        margin: EdgeInsets.only(top: 15.0, left: 20.0),
-        child: Column(
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                ClickEffectImage(
-                  width: 20.0,
-                  height: 20.0,
-                  assetsImgPath: GSYICons.IC_TODO_REC,
-                  onClick: (){CommonUtils.showToast(infoMsg: "点击了完成按钮，😃😃😃");},
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 8.0),
-                    child: Text(item.title, style: TextStyle(fontSize: 16.0)),
-                  ),
-                  flex: 1,
-                ),
-                ClickEffectImage(
-                  width: 20.0,
-                  height: 20.0,
-                  assetsImgPath: GSYICons.IC_DELETE,
-                  onClick: () {
-                    _deleteCurTodo(index);
-                  },
-                ),
-                SizedBox(width: 20.0,)
-              ],
-            ),
-            SizedBox(height: 10.0,),
-            Padding(
-              padding: EdgeInsets.only(left: 28.0, right: 28.0),
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: Text(
-                  item.content,
-                  style: TextStyle(color: Colors.black, fontSize: 15.0),
-                ),
+          SizedBox(
+            height: 10.0,
+          ),
+          Padding(
+            padding: EdgeInsets.only(left: 28.0, right: 28.0),
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: Text(
+                item.content,
+                style: TextStyle(color: Colors.black, fontSize: 15.0),
               ),
             ),
-            Divider(
-              height: 0.5,
-              color: Colors.grey,
-            )
-          ],
-        ),
-      );
-    }
+          ),
+        ],
+      ),
+    );
+
+
+
+
+ 
+
+
   }
 
   /**
    * 获取所有的代办事项 `=。=`
    */
-  Future _getAllTodos(dynamic page) async {
+  Future getAllTodos(dynamic page) async {
     CommonUtils.showLoadingDialog(context);
     Dio dio = new Dio();
     dio.options.contentType =
@@ -226,73 +260,45 @@ class HomeTodoState extends State<HomeTodoPage> with RouteAware {
     Navigator.of(context, rootNavigator: true).pop(null);
   }
 
-  List<TodoBeanDataData> _itemDatas = new List();
+  // List<TodoBeanDataData> _itemDatas = new List();
+
+  List<Entry> _entryDatas = new List();
+  Map<String, int> _gtjMap = new Map();
 
   void _dealWithTodoLists() {
     if (_todoBean == null) return;
-    _itemDatas.clear();
-    Map<String, String> map = new Map();
+    // _itemDatas.clear();
+    _entryDatas.clear();
+    _gtjMap.clear();
+
     _todoBean.data.datas.forEach((bean) {
-      if (map.containsKey(bean.dateStr)) {
-        _itemDatas.add(bean);
+      if (_gtjMap.containsKey(bean.dateStr)) {
+        int index = _gtjMap[bean.dateStr];
+        _entryDatas[index].todoBeans.add(bean);
       } else {
-        map[bean.dateStr] = "";
-        _itemDatas.add(_getNewDateTitle(bean.dateStr));
-        _itemDatas.add(bean);
+        Entry entry = new Entry(bean.dateStr, new List<TodoBeanDataData>());
+        entry.todoBeans.add(bean);
+        _entryDatas.add(entry);
+        _gtjMap[bean.dateStr] = _entryDatas.length - 1;
       }
     });
-    setState(() {});   // 刷新页面
+    setState(() {}); // 刷新页面
   }
-
-
-  /**
-   * 删除此条代办事项
-   */
-  Future _deleteCurTodo(int index) async {
-    CommonUtils.showLoadingDialog(context);
-    Dio dio = new Dio();
-    dio.options.contentType =
-        ContentType.parse("application/x-www-form-urlencoded");
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String cookies = prefs.getString(ApiConstants.LOGIN_COOKIE);
-    Map<String, dynamic> headers = new Map();
-    headers['Cookie'] = cookies;
-    Options options = new Options(headers: headers);
-    Response response;
-    try {
-      String requestUrl = sprintf(ApiConstants.DELETE_TODO,[_itemDatas[index].id.toString()]);
-      response = await dio.post(requestUrl, data: {"id":_itemDatas[index].id}, options: options);
-    } on DioError catch (e) {
-      Navigator.of(context, rootNavigator: true).pop(null);
-      CommonUtils.showToast(infoMsg: "请求服务器失败");
-      return;
-    }
-    if (response.statusCode == 200) {
-      var result = response.data;
-      if (result["errorCode"] == 0) {
-        CommonUtils.showToast(infoMsg: "删除代办成功");
-        _itemDatas.removeAt(index);
-        setState(() {});
-      } else {
-        CommonUtils.showToast(infoMsg: result["errorMsg"]);
-      }
-    } else {
-      CommonUtils.showToast(infoMsg: "服务器响应异常");
-    }
-    Navigator.of(context, rootNavigator: true).pop(null);
-  }
-
-
 }
 
 TodoBeanDataData _getNewDateTitle(dateStr) {
   return new TodoBeanDataData(dateStr: dateStr);
 }
 
+class Entry {
+  Entry(this.dateStr, [this.todoBeans = const <TodoBeanDataData>[]]);
+  final String dateStr;
+  final List<TodoBeanDataData> todoBeans;
+}
+
 // {date: 1556208000000, dateStr: 2019-04-26, id: 9686, priority: 0,
 // title: 水电费第三方, type: 0, userId: 22320, completeDateStr: ,
 // content: 第三方第三方, completeDate: null, status: 0}
-
 //   ------------  待办列表  ------------
 abstract class ListItem {}
 

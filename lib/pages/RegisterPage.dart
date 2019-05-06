@@ -8,12 +8,12 @@ import 'package:flutter_study/utils/CommonUtils.dart';
 import 'package:flutter_study/widget/GSYFlexButton.dart';
 import 'package:flutter_study/widget/GSYInputWidget.dart';
 
-/**
- * Creator: joseph
- * Date: 2019-04-23 23:44
- * FuncDesc:  注册页面
- * copyright  ©2019-2030 Technology Corporation. All rights reserved.
- */
+///
+/// Creator: joseph
+/// Date: 2019-04-23 23:44
+/// FuncDesc:  注册页面
+/// copyright  ©2019-2030 Technology Corporation. All rights reserved.
+///
 
 class RegisterPage extends StatefulWidget {
   static final sName = "/register_page";

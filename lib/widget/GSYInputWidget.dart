@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_study/common/style/GSYStyle.dart';
 
 /// 带图标的输入框
 class GSYInputWidget extends StatefulWidget {

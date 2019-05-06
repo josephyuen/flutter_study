@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_study/common/style/GSYStyle.dart';
+import 'package:flutter_study/utils/CommonUtils.dart';
+import 'package:flutter_study/widget/ClickEffectImage.dart';
 
 class ExpansionTileSample extends StatelessWidget {
   @override
@@ -9,7 +12,8 @@ class ExpansionTileSample extends StatelessWidget {
           title: const Text('ExpansionTile'),
         ),
         body: ListView.builder(
-          itemBuilder: (BuildContext context, int index) => EntryItem(data[index]),
+          itemBuilder: (BuildContext context, int index) =>
+              EntryItem(data[index]),
           itemCount: data.length,
         ),
       ),
@@ -26,9 +30,11 @@ class Entry {
 
 // The entire multilevel list displayed by this app.
 final List<Entry> data = <Entry>[
-  Entry('Chapter A',
+  Entry(
+    'Chapter A',
     <Entry>[
-      Entry('Section A0',
+      Entry(
+        'Section A0',
         <Entry>[
           Entry('Item A0.1'),
           Entry('Item A0.2'),
@@ -39,17 +45,20 @@ final List<Entry> data = <Entry>[
       Entry('Section A2'),
     ],
   ),
-  Entry('Chapter B',
+  Entry(
+    'Chapter B',
     <Entry>[
       Entry('Section B0'),
       Entry('Section B1'),
     ],
   ),
-  Entry('Chapter C',
+  Entry(
+    'Chapter C',
     <Entry>[
       Entry('Section C0'),
       Entry('Section C1'),
-      Entry('Section C2',
+      Entry(
+        'Section C2',
         <Entry>[
           Entry('Item C2.0'),
           Entry('Item C2.1'),
@@ -59,6 +68,11 @@ final List<Entry> data = <Entry>[
       ),
     ],
   ),
+  Entry(
+     'Chapter X',
+     <Entry>[] 
+  )
+
 ];
 
 // Displays one Entry. If the entry has children then it's displayed
@@ -69,8 +83,50 @@ class EntryItem extends StatelessWidget {
   final Entry entry;
 
   Widget _buildTiles(Entry root) {
-    if (root.children.isEmpty)
-      return ListTile(title: Text(root.title));
+    if (root.children.isEmpty) return new Container(
+        margin: EdgeInsets.only(top: 15.0, left: 20.0),
+        child: Column(
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                ClickEffectImage(
+                  width: 20.0,
+                  height: 20.0,
+                  assetsImgPath: GSYICons.IC_TODO_REC,
+                  onClick: (){CommonUtils.showToast(infoMsg: "点击了完成按钮，😃😃😃");},
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 8.0),
+                    child: Text(root.title, style: TextStyle(fontSize: 16.0)),
+                  ),
+                  flex: 1,
+                ),
+                ClickEffectImage(
+                  width: 20.0,
+                  height: 20.0,
+                  assetsImgPath: GSYICons.IC_DELETE,
+                  onClick: () {
+                    // _deleteCurTodo(index);
+                  },
+                ),
+                SizedBox(width: 20.0,)
+              ],
+            ),
+            SizedBox(height: 10.0,),
+            Padding(
+              padding: EdgeInsets.only(left: 28.0, right: 28.0),
+              child: Align(
+                alignment: Alignment.topLeft,
+                // child: Text(
+                //    item.content,
+                //   style: TextStyle(color: Colors.black, fontSize: 15.0),
+                // ),
+              ),
+            ),
+          ],
+        ),
+      );
     return ExpansionTile(
       key: PageStorageKey<Entry>(root),
       title: Text(root.title),

@@ -9,7 +9,6 @@ import 'package:flutter_study/Constants.dart';
 import 'package:flutter_study/pages/ImagePickerPage.dart';
 import 'package:flutter_study/pages/LoginPage.dart';
 import 'package:flutter_study/pages/RegisterPage.dart';
-import 'package:flutter_study/pages/VoiceSetPage.dart';
 import 'package:flutter_study/pages/expansion_tile_sample.dart';
 import 'package:flutter_study/pages/todo/AddToDoPage.dart';
 import 'package:flutter_study/pages/todo/HomeTodoPage.dart';
@@ -94,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   }
 
-  /**
+  /*
    *  去登录页面
    */
   Future _goToLoginPage() async {
@@ -112,7 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  /**
+  /*
    *  去图片选择
    */
   void _goToImagePicker() {

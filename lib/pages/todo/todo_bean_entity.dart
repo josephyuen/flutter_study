@@ -1,6 +1,5 @@
-import 'package:json_annotation/json_annotation.dart';
 
-/**
+/*
  * Creator: joseph
  * Date: 2019-04-25 09:22
  * FuncDesc:  Todo基础Bean

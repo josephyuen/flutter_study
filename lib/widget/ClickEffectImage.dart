@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 
-/**
- * Creator: joseph
- * Date: 2019-04-30 11:02
- * FuncDesc:
- * copyright  ©2019-2030 Technology Corporation. All rights reserved.
- */
+///  Creator: joseph
+///  Date: 2019-04-30 11:02
+///  FuncDesc:
+///  copyright  ©2019-2030 Technology Corporation. All rights reserved.
 
 class ClickEffectImage extends StatelessWidget{
 

@@ -8,12 +8,12 @@ import 'package:flutter_study/utils/CommonUtils.dart';
 import 'package:date_format/date_format.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/**
- * Creator: joseph
- * Date: 2019-04-25 17:05
- * FuncDesc:  新增代办事项
- * copyright  ©2019-2030 Technology Corporation. All rights reserved.
- */
+///
+/// Creator: joseph
+/// Date: 2019-04-25 17:05
+/// FuncDesc:  新增代办事项
+/// copyright  ©2019-2030 Technology Corporation. All rights reserved.
+///
 
 class AddToDoPage extends StatefulWidget {
   static final String sName = "/add_todo_page";
@@ -118,7 +118,7 @@ class AddTodoState extends State<AddToDoPage> {
     );
   }
 
-  /**
+  /*
    * 新增代办事项
    */
   Future _commitTodo() async {
@@ -153,6 +153,7 @@ class AddTodoState extends State<AddToDoPage> {
           },
           options: options);
     } on DioError catch (e) {
+      debugPrint(e.message);
       Navigator.of(context, rootNavigator: true).pop(null);
       CommonUtils.showToast(infoMsg: "请求服务器失败");
       return;
